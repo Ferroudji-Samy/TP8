@@ -32,7 +32,7 @@ public class AEtoile implements AlgorithmeHeuristiqueRechercheEE {
     	if(frontiere.size()>0)min=frontiere.get(0);
     	
     	for(int i=1;i<frontiere.size()-1;i++) {
-    		if(f(min)>f(frontiere.get(i)))min=frontiere.get(i);
+    		if(min.getF()>frontiere.get(i).getF())min=frontiere.get(i);
     	}
     	return min;
     }
@@ -57,7 +57,7 @@ public class AEtoile implements AlgorithmeHeuristiqueRechercheEE {
         	else {
         		frontiere.remove(n);
         		dejaDev.add(n);
-        		for(Noeud s : successeurs(n)) {
+        		for(NoeudGF s : successeurs(n)) {
         			if(!dejaDev.contains(s)&&!frontiere.contains(s)) {
         			/**	Pere(s)=n
         				g(s)=g(n)+cout(n,s);
@@ -66,9 +66,9 @@ public class AEtoile implements AlgorithmeHeuristiqueRechercheEE {
         			}
         			else {
         				if(g(s)>g(n)+cout(n,s)) {
-        					Pere(s)=n;
+        					s.setPere(n);
         					g(s)=g(n)+cout(n,s);
-        					f(s)=g(s)+h(s);
+        					s.setF(g(s)+h(s));
         				}
         			}
         		}
