@@ -47,19 +47,19 @@ public class AEtoile implements AlgorithmeHeuristiqueRechercheEE {
         
         ProblemeACout pcout = (ProblemeACout) p;
         Etat sinit=pcout.getEtatInitial();
-        NoeudGF init=(NoeudGF) new Noeud(sinit, null);
+        NoeudGF init=new NoeudGF(sinit, null, 0, 0);
         LinkedList<NoeudGF> dejaDev= new LinkedList<NoeudGF>();
         LinkedList<NoeudGF> frontiere= new LinkedList<NoeudGF>();
         HashMap<NoeudGF, Float> g = new HashMap<NoeudGF, Float>();
         
-        frontiere.add((NoeudGF)sinit);
+        frontiere.add(init);
         init.setF( getHeuristique().eval(sinit) );
         g.put(init,(float) 0);	
         
         while(!frontiere.isEmpty()) {
 	        	NoeudGF n=choixFmin(frontiere);
 	        	if(pcout.isTerminal(n.getEtat())) {
-	        		sol=construireSolution(n,n.getPere());
+	        		return sol=construireSolution(n,n.getPere());
 	        	}
 	        	else {
 	        		frontiere.remove(n);
@@ -67,14 +67,16 @@ public class AEtoile implements AlgorithmeHeuristiqueRechercheEE {
 	        		LinkedList<Etat> ensemble=(LinkedList<Etat>) pcout.successeurs(n.getEtat());
 	        		for(Etat es : ensemble) {
 	        			if(estDans(es,dejaDev)==null&&estDans(es,frontiere)==null) {
-	        				NoeudGF s=(NoeudGF)new Noeud(es,n);
+	        				float cout=pcout.cout(n.getEtat(),es);
+	        				NoeudGF s=new NoeudGF(es,n, cout, 0);
 	        				s.setPere(n);
-	        				g.put(s,g.get(n)+pcout.cout(n.getEtat(),s.getEtat()));
+	        				g.put(s,g.get(n)+cout);
 	        				s.setF(g.get(s)+getHeuristique().eval(es));
 	        				frontiere.add(s);
 	        			}
 	        			else {
-	        				NoeudGF s=(NoeudGF)new Noeud();
+	        				float cout=pcout.cout(n.getEtat(),es);
+	        				NoeudGF s=new NoeudGF(es, n, cout, 0);
 	        				if(estDans(es,frontiere)!=null) {
 	        					s=estDans(es,frontiere);
 	        				}
@@ -91,6 +93,7 @@ public class AEtoile implements AlgorithmeHeuristiqueRechercheEE {
 	        		}
 	        	}
 	        noeudsDeveloppe++;
+
         }
         return sol;
     }
