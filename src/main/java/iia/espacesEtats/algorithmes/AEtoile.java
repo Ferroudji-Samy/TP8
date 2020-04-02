@@ -3,7 +3,7 @@ package iia.espacesEtats.algorithmes;
  * AEtoile.java
  */
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 
 import iia.espacesEtats.graphes.Noeud;
@@ -13,8 +13,6 @@ import iia.espacesEtats.modeles.Heuristique;
 import iia.espacesEtats.modeles.Probleme;
 import iia.espacesEtats.modeles.ProblemeACout;
 import iia.espacesEtats.modeles.Solution;
-import problemes.tsp.EtatTSP;
-import problemes.tsp.ProblemeTSP;
 
 /**
  * La classe qui implémente l'algo A*
@@ -25,7 +23,7 @@ public class AEtoile implements AlgorithmeHeuristiqueRechercheEE {
 
     private Heuristique h;
     private int noeudsDeveloppe = 0;
-
+    
 
     /* Constructeur de base */
     public AEtoile(Heuristique h) {
@@ -46,17 +44,19 @@ public class AEtoile implements AlgorithmeHeuristiqueRechercheEE {
     public Solution chercheSolution(Probleme p) {
         Solution sol = null;
         /* TODO  A compléter/modifier */
+        
         ProblemeACout pcout = (ProblemeACout) p;
         Etat sinit=pcout.getEtatInitial();
         NoeudGF init=(NoeudGF) new Noeud(sinit, null);
         LinkedList<NoeudGF> dejaDev= new LinkedList<NoeudGF>();
         LinkedList<NoeudGF> frontiere= new LinkedList<NoeudGF>();
+        HashMap<NoeudGF, Float> g = new HashMap<NoeudGF, Float>();
         
         frontiere.add((NoeudGF)sinit);
-
-        int g=0; 
         init.setF( getHeuristique().eval(sinit) );
-        	while(!frontiere.isEmpty()) {
+        g.put(init,(float) 0);	
+        
+        while(!frontiere.isEmpty()) {
 	        	NoeudGF n=choixFmin(frontiere);
 	        	if(pcout.isTerminal(n.getEtat())) {
 	        		sol=construireSolution(n,n.getPere());
@@ -69,8 +69,8 @@ public class AEtoile implements AlgorithmeHeuristiqueRechercheEE {
 	        			if(estDans(es,dejaDev)==null&&estDans(es,frontiere)==null) {
 	        				NoeudGF s=(NoeudGF)new Noeud(es,n);
 	        				s.setPere(n);
-	        				g(s)=g(n)+cout(n,s);
-	        				s.setF(g(s)+getHeuristique().eval(es));
+	        				g.put(s,g.get(n)+pcout.cout(n.getEtat(),s.getEtat()));
+	        				s.setF(g.get(s)+getHeuristique().eval(es));
 	        				frontiere.add(s);
 	        			}
 	        			else {
@@ -82,14 +82,15 @@ public class AEtoile implements AlgorithmeHeuristiqueRechercheEE {
 	        					s=estDans(es,dejaDev);
 	        				}
 	        				
-	        				if(g(s)>g(n)+pcout.cout(n.getEtat(),s.getEtat())) {
+	        				if(g.get(s)>g.get(n)+pcout.cout(n.getEtat(),s.getEtat())) {
 	        					s.setPere(n);
-	        					g(s)=g(n)+cout(n,s);
-	        					s.setF(g(s)+getHeuristique().eval(es) );
+	        					g.put(s,g.get(n)+pcout.cout(n.getEtat(),s.getEtat()));
+	        					s.setF(g.get(s)+getHeuristique().eval(es) );
 	        				}
 	        			}
 	        		}
 	        	}
+	        noeudsDeveloppe++;
         }
         return sol;
     }
