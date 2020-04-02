@@ -9,6 +9,8 @@ import iia.espacesEtats.modeles.Etat;
 import iia.espacesEtats.modeles.Heuristique;
 import iia.espacesEtats.modeles.Probleme;
 import iia.espacesEtats.modeles.Solution;
+import problemes.tsp.CarteRoutiereRoumanie.Villes;
+
 import java.util.LinkedList;
 
 
@@ -46,6 +48,33 @@ public class ResolutionTSP {
 
 
         /* NB : A vous d'essayer les autres heuristiques  */
+        
+        Heuristique h2 = new Heuristique() {
+
+			@Override
+			public float eval(Etat e) {
+				int sum = 0;
+				EtatTSP eTSP = (EtatTSP) e;
+				LinkedList<String> vL = EtatTSP.CARTE.getListeVilles();
+				
+				for(String s : eTSP.getaParcourir()) {
+					int nbRoutes = 0;
+					int dist = 0;
+					
+					for(int i=0; i<vL.size(); i++) {
+						int d = EtatTSP.CARTE.connexion(vL.get(i), s);
+						if(d>0) {
+							dist+=d;
+							nbRoutes++;
+						}
+					}
+					
+					sum += dist/nbRoutes;
+				}
+				
+				return sum;
+			}
+        };
 
 
 
