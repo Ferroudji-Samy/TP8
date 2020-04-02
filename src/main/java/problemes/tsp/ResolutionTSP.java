@@ -75,6 +75,35 @@ public class ResolutionTSP {
 				return sum;
 			}
         };
+        
+        
+        Heuristique h3 = new Heuristique() {
+
+			@Override
+			public float eval(Etat e) {
+				int sum = 0;
+				EtatTSP eTSP = (EtatTSP) e;
+				LinkedList<String> vL = EtatTSP.CARTE.getListeVilles();
+				
+				for(String s : eTSP.getaParcourir()) {
+					int min = Integer.MAX_VALUE;
+					
+					for(int i=0; i<vL.size(); i++) {
+						int d = EtatTSP.CARTE.connexion(vL.get(i), s);
+						if(d>0) { 
+							if(d<min) {
+								min = d;
+							}
+						}
+					}
+					
+					sum += min;
+				}
+				
+				return sum;
+			}
+        	
+        };
 
 
 
