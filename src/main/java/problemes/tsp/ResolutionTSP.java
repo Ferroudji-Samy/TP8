@@ -63,13 +63,13 @@ public class ResolutionTSP {
 					
 					for(int i=0; i<vL.size(); i++) {
 						int d = EtatTSP.CARTE.connexion(vL.get(i), s);
-						if(d>0) {
+						if(d>0) { 
 							dist+=d;
 							nbRoutes++;
 						}
 					}
 					
-					sum += dist/nbRoutes;
+					sum += dist/nbRoutes; 
 				}
 				
 				return sum;
