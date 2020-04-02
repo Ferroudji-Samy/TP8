@@ -48,15 +48,14 @@ public class AEtoile implements AlgorithmeHeuristiqueRechercheEE {
         /* TODO  A compléter/modifier */
         ProblemeACout pcout = (ProblemeACout) p;
         Etat sinit=pcout.getEtatInitial();
-        Noeud init=new Noeud(sinit, null);
+        NoeudGF init=(NoeudGF) new Noeud(sinit, null);
         LinkedList<NoeudGF> dejaDev= new LinkedList<NoeudGF>();
         LinkedList<NoeudGF> frontiere= new LinkedList<NoeudGF>();
         
         frontiere.add((NoeudGF)sinit);
 
-        g(sinit)=0;
-        
-        sinit.setF( h(sinit) );
+        int g=0; 
+        init.setF( getHeuristique().eval(sinit) );
         	while(!frontiere.isEmpty()) {
 	        	NoeudGF n=choixFmin(frontiere);
 	        	if(pcout.isTerminal(n.getEtat())) {
@@ -67,18 +66,26 @@ public class AEtoile implements AlgorithmeHeuristiqueRechercheEE {
 	        		dejaDev.add(n);
 	        		LinkedList<Etat> ensemble=(LinkedList<Etat>) pcout.successeurs(n.getEtat());
 	        		for(Etat es : ensemble) {
-	        			NoeudGF s=estdans(es,/** je sais pas quoi mettre ici**/);
-	        			if(!dejaDev.contains(s)&&!frontiere.contains(s)) {
+	        			if(estDans(es,dejaDev)==null&&estDans(es,frontiere)==null) {
+	        				NoeudGF s=(NoeudGF)new Noeud(es,n);
 	        				s.setPere(n);
 	        				g(s)=g(n)+cout(n,s);
-	        				s.setF(g(s)+getHeuristique());
+	        				s.setF(g(s)+getHeuristique().eval(es));
 	        				frontiere.add(s);
 	        			}
 	        			else {
+	        				NoeudGF s=(NoeudGF)new Noeud();
+	        				if(estDans(es,frontiere)!=null) {
+	        					s=estDans(es,frontiere);
+	        				}
+	        				else {
+	        					s=estDans(es,dejaDev);
+	        				}
+	        				
 	        				if(g(s)>g(n)+pcout.cout(n.getEtat(),s.getEtat())) {
 	        					s.setPere(n);
 	        					g(s)=g(n)+cout(n,s);
-	        					s.setF(g(s)+getHeuristique() );
+	        					s.setF(g(s)+getHeuristique().eval(es) );
 	        				}
 	        			}
 	        		}
