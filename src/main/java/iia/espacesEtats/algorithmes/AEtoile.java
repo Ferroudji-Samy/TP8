@@ -47,40 +47,53 @@ public class AEtoile implements AlgorithmeHeuristiqueRechercheEE {
         Solution sol = null;
         /* TODO  A compléter/modifier */
         ProblemeACout pcout = (ProblemeACout) p;
+        Etat sinit=pcout.getEtatInitial();
+        Noeud init=new Noeud(sinit, null);
         LinkedList<NoeudGF> dejaDev= new LinkedList<NoeudGF>();
         LinkedList<NoeudGF> frontiere= new LinkedList<NoeudGF>();
-        frontiere.add(sinit);
-        /**
-         * g(sinit)=0;
-         * f(sinit)=h(sinit)
-         */
-        while(!frontiere.isEmpty()) {
-        	NoeudGF n=choixFmin(frontiere);
-        	if(estTerminal(n.getEtat())) {
-        		sol=construireSolution(n,n.getPere());
-        	}
-        	else {
-        		frontiere.remove(n);
-        		dejaDev.add(n);
-        		for(NoeudGF s : successeurs(n.getEtat())) {
-        			if(!dejaDev.contains(s)&&!frontiere.contains(s)) {
-        				s.setPere(n);
-        				g(s)=g(n)+cout(n,s);
-        				s.setF(g(s)+getHeuristique());
-        				frontiere.add(s);
-        			}
-        			else {
-        				if(g(s)>g(n)+cout(n,s)) {
-        					s.setPere(n);
-        					g(s)=g(n)+cout(n,s);
-        					s.setF(g(s)+getHeuristique() );
-        				}
-        			}
-        		}
-        	}
+        
+        frontiere.add((NoeudGF)sinit);
+
+        g(sinit)=0;
+        
+        sinit.setF( h(sinit) );
+        	while(!frontiere.isEmpty()) {
+	        	NoeudGF n=choixFmin(frontiere);
+	        	if(pcout.isTerminal(n.getEtat())) {
+	        		sol=construireSolution(n,n.getPere());
+	        	}
+	        	else {
+	        		frontiere.remove(n);
+	        		dejaDev.add(n);
+	        		LinkedList<Etat> ensemble=(LinkedList<Etat>) pcout.successeurs(n.getEtat());
+	        		for(Etat es : ensemble) {
+	        			NoeudGF s=estdans(es,/** je sais pas quoi mettre ici**/);
+	        			if(!dejaDev.contains(s)&&!frontiere.contains(s)) {
+	        				s.setPere(n);
+	        				g(s)=g(n)+cout(n,s);
+	        				s.setF(g(s)+getHeuristique());
+	        				frontiere.add(s);
+	        			}
+	        			else {
+	        				if(g(s)>g(n)+pcout.cout(n.getEtat(),s.getEtat())) {
+	        					s.setPere(n);
+	        					g(s)=g(n)+cout(n,s);
+	        					s.setF(g(s)+getHeuristique() );
+	        				}
+	        			}
+	        		}
+	        	}
         }
         return sol;
     }
+    
+    private NoeudGF estDans(Etat e, LinkedList<NoeudGF> ensemble) {
+		for(NoeudGF i : ensemble) {
+			if (i.getEtat().equals(e))return i;
+		}
+    	return null;
+    }
+    
     
     private Solution construireSolution(Noeud n, Noeud pere) {
 		Solution sol=new Solution(n.getEtat());
