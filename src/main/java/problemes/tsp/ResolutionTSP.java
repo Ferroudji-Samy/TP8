@@ -86,7 +86,7 @@ public class ResolutionTSP {
 				LinkedList<String> vL = EtatTSP.CARTE.getListeVilles();
 				
 				for(String s : eTSP.getaParcourir()) {
-					int min = Integer.MAX_VALUE;
+					int min = Integer.MAX_VALUE; 
 					
 					for(int i=0; i<vL.size(); i++) {
 						int d = EtatTSP.CARTE.connexion(vL.get(i), s);
