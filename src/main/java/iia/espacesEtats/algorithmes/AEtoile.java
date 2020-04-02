@@ -4,12 +4,14 @@ package iia.espacesEtats.algorithmes;
  */
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 
 import iia.espacesEtats.graphes.NoeudGF;
 import iia.espacesEtats.modeles.Heuristique;
 import iia.espacesEtats.modeles.Probleme;
 import iia.espacesEtats.modeles.ProblemeACout;
 import iia.espacesEtats.modeles.Solution;
+import problemes.tsp;
 
 /**
  * La classe qui implémente l'algo A*
@@ -27,7 +29,7 @@ public class AEtoile implements AlgorithmeHeuristiqueRechercheEE {
         this.h = h;
     }
     
-    private NoeudGF choixFmin(ArrayList<NoeudGF> frontiere) {
+    private NoeudGF choixFmin(LinkedList<NoeudGF> frontiere) {
     	NoeudGF min=null;
     	if(frontiere.size()>0)min=frontiere.get(0);
     	
@@ -42,8 +44,8 @@ public class AEtoile implements AlgorithmeHeuristiqueRechercheEE {
         Solution sol = null;
         /* TODO  A compléter/modifier */
         ProblemeACout pcout = (ProblemeACout) p;
-        ArrayList<NoeudGF> dejaDev= new ArrayList<NoeudGF>();
-        ArrayList<NoeudGF> frontiere= new ArrayList<NoeudGF>();
+        LinkedList<NoeudGF> dejaDev= new LinkedList<NoeudGF>();
+        LinkedList<NoeudGF> frontiere= new LinkedList<NoeudGF>();
         frontiere.add(sinit);
         /**
          * g(sinit)=0;
@@ -52,17 +54,17 @@ public class AEtoile implements AlgorithmeHeuristiqueRechercheEE {
         while(!frontiere.isEmpty()) {
         	NoeudGF n=choixFmin(frontiere);
         	if(estTerminal(n)) {
-        		sol=construireSolution(n,Pere);
+        		sol=construireSolution(n,(NoeudGF)n.getPere());
         	}
         	else {
         		frontiere.remove(n);
         		dejaDev.add(n);
         		for(NoeudGF s : successeurs(n)) {
         			if(!dejaDev.contains(s)&&!frontiere.contains(s)) {
-        			/**	Pere(s)=n
+        				s.setPere(n);
         				g(s)=g(n)+cout(n,s);
-        				f(s)=g(s)+h(s);
-        			**/	frontiere.add(s);
+        				s.setF(g(s)+h(s));
+        				frontiere.add(s);
         			}
         			else {
         				if(g(s)>g(n)+cout(n,s)) {
