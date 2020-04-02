@@ -6,12 +6,15 @@ package iia.espacesEtats.algorithmes;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
+import iia.espacesEtats.graphes.Noeud;
 import iia.espacesEtats.graphes.NoeudGF;
+import iia.espacesEtats.modeles.Etat;
 import iia.espacesEtats.modeles.Heuristique;
 import iia.espacesEtats.modeles.Probleme;
 import iia.espacesEtats.modeles.ProblemeACout;
 import iia.espacesEtats.modeles.Solution;
-import problemes.tsp;
+import problemes.tsp.EtatTSP;
+import problemes.tsp.ProblemeTSP;
 
 /**
  * La classe qui implémente l'algo A*
@@ -53,24 +56,24 @@ public class AEtoile implements AlgorithmeHeuristiqueRechercheEE {
          */
         while(!frontiere.isEmpty()) {
         	NoeudGF n=choixFmin(frontiere);
-        	if(estTerminal(n)) {
-        		sol=construireSolution(n,(NoeudGF)n.getPere());
+        	if(estTerminal(n.getEtat())) {
+        		sol=construireSolution(n,n.getPere());
         	}
         	else {
         		frontiere.remove(n);
         		dejaDev.add(n);
-        		for(NoeudGF s : successeurs(n)) {
+        		for(NoeudGF s : successeurs(n.getEtat())) {
         			if(!dejaDev.contains(s)&&!frontiere.contains(s)) {
         				s.setPere(n);
         				g(s)=g(n)+cout(n,s);
-        				s.setF(g(s)+h(s));
+        				s.setF(g(s)+getHeuristique());
         				frontiere.add(s);
         			}
         			else {
         				if(g(s)>g(n)+cout(n,s)) {
         					s.setPere(n);
         					g(s)=g(n)+cout(n,s);
-        					s.setF(g(s)+h(s));
+        					s.setF(g(s)+getHeuristique() );
         				}
         			}
         		}
@@ -78,6 +81,17 @@ public class AEtoile implements AlgorithmeHeuristiqueRechercheEE {
         }
         return sol;
     }
+    
+    private Solution construireSolution(Noeud n, Noeud pere) {
+		Solution sol=new Solution(n.getEtat());
+		Noeud stock=pere;
+		while(stock!=null) {
+			sol.add(stock.getEtat());
+			stock=stock.getPere();
+		}
+		return sol;
+	}
+
 
     public void setHeuristique(Heuristique h) {
         this.h = h;
